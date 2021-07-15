@@ -1,12 +1,50 @@
 {
   "name": "asset-extractor",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
-  "devDependencies": {
-    "@tauri-apps/cli": "^1.0.0-beta.5"
+  "scripts": {
+    "start": "yarn clean && yarn serve",
+    "serve": "webpack-dev-server -d --env=dev",
+    "build": "yarn clean && webpack --env=prod",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "clean": "rimraf ./dist"
   },
   "dependencies": {
-    "@tauri-apps/api": "^1.0.0-beta.4"
+    "@geist-ui/react": "^2",
+    "@tauri-apps/api": "^1.0.0-beta.4",
+    "react": "^17",
+    "react-dom": "^17"
+  },
+  "devDependencies": {
+    "@babel/core": "^7",
+    "@babel/plugin-syntax-dynamic-import": "^7",
+    "@babel/plugin-transform-react-jsx": "^7",
+    "@babel/plugin-transform-typescript": "^7",
+    "@babel/polyfill": "^7",
+    "@babel/preset-env": "^7",
+    "@tauri-apps/cli": "^1.0.0-beta.5",
+    "@types/react": "^17",
+    "@types/react-dom": "^17",
+    "@typescript-eslint/eslint-plugin": "^4",
+    "@typescript-eslint/parser": "^4",
+    "babel-loader": "^8",
+    "core-js": "3",
+    "eslint": "^7",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-ordered-imports": "^0",
+    "eslint-plugin-prettier": "^3",
+    "eslint-plugin-react": "^7",
+    "file-loader": "^6.2.0",
+    "gh-pages": "^3",
+    "html-webpack-plugin": "^5",
+    "npm-run-all": "^4",
+    "prettier": "^2",
+    "rimraf": "^3",
+    "ts-node": "^10",
+    "typescript": "4.3",
+    "webpack": "^5",
+    "webpack-bundle-analyzer": "^4",
+    "webpack-cli": "^3",
+    "webpack-dev-server": "^3"
   }
 }
