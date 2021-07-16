@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import * as Icon from '@geist-ui/react-icons';
 import {
@@ -7,28 +7,67 @@ import {
   Progress,
   Row,
   Spacer,
-  Text,
-  Tooltip
+  Spinner,
+  Text
 } from '@geist-ui/react';
+import { invoke } from '@tauri-apps/api/tauri';
+import { getCurrent } from '@tauri-apps/api/window';
 
 export const App: FC = () => {
-  let gameFileInput: HTMLInputElement | null = null;
-  const [gameFiles, setGameFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [gameFiles, setGameFiles] = useState<string[]>([]);
+  const [extractProgress, setExtractProgress] = useState<number | null>(null);
+  const [extractStep, setExtractStep] = useState<string>('');
 
-  const handleSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return;
-    const file = event.target.files[0];
-    if (!file) return;
-    setGameFiles([file, ...gameFiles]);
+  useEffect(() => {
+    const current = getCurrent();
+    const progressListener = current.listen('extract_progress', event => {
+      setExtractProgress(event.payload as number);
+    });
+    const messageListener = current.listen('extract_message', event => {
+      console.info(event.payload);
+    });
+    const stepListener = current.listen('extract_step', event => {
+      setExtractStep(event.payload as string);
+    });
+    return () => {
+      (async () => {
+        (await progressListener)();
+        (await messageListener)();
+        (await stepListener)();
+      })();
+    };
+  }, []);
+
+  const handleAddFiles = async () => {
+    try {
+      const files = await invoke<string[]>('add_files');
+      setGameFiles(files);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const deleteFile = (fileName: string) => () => {
-    const files = [...gameFiles];
-    files.splice(
-      files.findIndex(file => file.name === fileName),
-      1
-    );
-    setGameFiles(files);
+  const handleRemoveFile = (fileName: string) => async () => {
+    try {
+      const files = await invoke<string[]>('remove_file', { fileName });
+      setGameFiles(files);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleStart = async () => {
+    try {
+      setLoading(true);
+      setExtractProgress(0);
+      setExtractStep('');
+      await invoke('extract_assets');
+    } catch (err) {
+      setExtractProgress(null);
+      console.error(err);
+    }
+    setLoading(false);
   };
 
   return (
@@ -45,45 +84,48 @@ export const App: FC = () => {
         <div style={{ maxWidth: '24rem' }}>
           {gameFiles.map(gameFile => (
             <Row
-              key={gameFile.name}
+              key={gameFile}
               style={{ marginBottom: '0.6rem' }}
               justify="space-between"
             >
-              <span>{gameFile.name}</span>
-
-              <Tooltip text={'Remove this entry'} type="dark">
-                <Button
-                  auto
-                  size="mini"
-                  icon={<Icon.Delete />}
-                  onClick={deleteFile(gameFile.name)}
-                />
-              </Tooltip>
+              <span>{gameFile}</span>
+              <Button
+                auto
+                size="mini"
+                type="error"
+                disabled={loading}
+                icon={<Icon.Trash2 />}
+                onClick={handleRemoveFile(gameFile)}
+              />
             </Row>
           ))}
         </div>
         <Button
           type="success-light"
-          icon={<Icon.PlusCircle />}
-          onClick={() => {
-            if (gameFileInput) {
-              gameFileInput.click();
-            }
-          }}
+          disabled={loading}
+          iconRight={<Icon.PlusCircle />}
+          onClick={handleAddFiles}
         >
           Add
         </Button>
-        <input
-          id="smm-game-file-input"
-          type="file"
-          accept=".xci,.nsp"
-          multiple
-          ref={ref => (gameFileInput = ref)}
-          style={{ display: 'none' }}
-          onChange={handleSelect}
-        />
         <Spacer y={2} />
-        <Progress value={50} />
+        <Button
+          type="success-light"
+          disabled={gameFiles.length === 0 || loading}
+          iconRight={loading ? <Spinner /> : <Icon.PlayCircle />}
+          onClick={handleStart}
+        >
+          Start
+        </Button>
+        <Spacer y={2} />
+        {extractProgress != null && (
+          <>
+            <Progress value={extractProgress} />
+            {extractStep.split('\n').map((step, i) => (
+              <Text key={i}>{step}</Text>
+            ))}
+          </>
+        )}
       </Page>
     </>
   );

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "yarn clean && yarn serve",
+    "start": "yarn serve",
     "serve": "webpack-dev-server -d --env=dev --hmr",
     "build": "yarn clean && webpack --env=prod",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
