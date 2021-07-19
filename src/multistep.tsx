@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, useState } from 'react';
 
-import { Button, Page, Row } from '@geist-ui/react';
+import { Button, Row } from '@geist-ui/react';
 
 export const MultiStep: FC<{
   steps: {
@@ -25,9 +25,33 @@ export const MultiStep: FC<{
   };
 
   return (
-    <Page>
-      <Page.Content>{steps[currentStep].component}</Page.Content>
-      <Page.Footer style={{ margin: '2rem 0' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '750pt',
+        maxWidth: '100vw',
+        maxHeight: '100vh',
+        minHeight: '100vh',
+        margin: '0 auto',
+        padding: '0 16pt',
+        boxSizing: 'border-box',
+        position: 'relative'
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          flex: '1 1 auto',
+          maxHeight: 'calc(100vh - 5rem)',
+          paddingTop: '1rem'
+        }}
+      >
+        {steps[currentStep].component}
+      </div>
+      <div style={{ margin: '2rem 0', flex: '0 0 3rem' }}>
         <Row justify="space-around">
           <Button
             onClick={navigateBackward}
@@ -51,7 +75,7 @@ export const MultiStep: FC<{
             {steps[currentStep].nextLabel ?? 'Next'}
           </Button>
         </Row>
-      </Page.Footer>
-    </Page>
+      </div>
+    </div>
   );
 };

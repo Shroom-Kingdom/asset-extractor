@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 import * as Icon from '@geist-ui/react-icons';
 import { invoke } from '@tauri-apps/api/tauri';
@@ -15,6 +15,8 @@ export const App: FC = () => {
   const [extractProgress, setExtractProgress] = useState<number>(0);
   const [extractMessages, setExtractMessages] = useState<string>('');
   const [extractStep, setExtractStep] = useState<string>('');
+  const messages = useRef(extractMessages);
+  let extractMessageTimeout: number | null = null;
 
   useEffect(() => {
     const current = getCurrent();
@@ -22,7 +24,14 @@ export const App: FC = () => {
       setExtractProgress(event.payload as number);
     });
     const messageListener = current.listen('extract_message', event => {
-      setExtractMessages(extractMessages + event.payload);
+      messages.current += event.payload;
+      messages.current += '\n';
+      if (!extractMessageTimeout) {
+        extractMessageTimeout = setTimeout(() => {
+          setExtractMessages(messages.current);
+          extractMessageTimeout = null;
+        }, 500) as unknown as number;
+      }
     });
     const stepListener = current.listen('extract_step', event => {
       setExtractStep(event.payload as string);

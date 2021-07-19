@@ -14,7 +14,7 @@ export const AssetSelect: FC<{
       <Text>
         Please select all your game resource files from Super Mario Maker 2:
       </Text>
-      <div style={{ maxWidth: '24rem' }}>
+      <div style={{ maxWidth: '24rem', minWidth: '24rem' }}>
         {assetFiles.map(assetFile => (
           <Row
             key={assetFile}
