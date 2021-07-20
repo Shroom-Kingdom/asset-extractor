@@ -1,5 +1,6 @@
-use crate::Result;
+use crate::{extract_ninres, Result};
 use ninres::NinRes;
+use rayon::iter::{ParallelBridge, ParallelIterator};
 use std::{
     fs::{self, read_dir, DirEntry},
     path::Path,
@@ -78,15 +79,27 @@ pub async fn extract_xci(
         max_progress,
     )?;
 
+    let ninres_dir = dir.path().join("ninres");
     let model_dir = romfs_dir.join("Model");
-    for dir_entry in read_dir(model_dir)? {
-        let dir_entry = dir_entry?;
-        dbg!(&dir_entry);
+    let pack_dir = romfs_dir.join("Pack");
+    let extract_fn = |dir_entry| -> Result<_> {
+        let dir_entry: DirEntry = dir_entry?;
         let file_data = fs::read(dir_entry.path())?;
         if let Ok(ninres) = file_data.as_ninres() {
-            dbg!(&ninres);
+            extract_ninres(&ninres, ninres_dir.clone())?;
         }
-    }
+        Ok(())
+    };
+    read_dir(model_dir)?
+        .par_bridge()
+        .map(extract_fn)
+        .map(Result::ok)
+        .collect::<Vec<_>>();
+    read_dir(pack_dir)?
+        .par_bridge()
+        .map(extract_fn)
+        .map(Result::ok)
+        .collect::<Vec<_>>();
     increase_progress(
         &format!("{}\nFinished!", file_message),
         window,

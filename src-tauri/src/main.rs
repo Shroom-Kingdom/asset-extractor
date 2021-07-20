@@ -4,9 +4,12 @@
 )]
 
 mod error;
+mod ninres;
 mod xci;
 
 pub type Result<T> = std::result::Result<T, error::Error>;
+
+pub use crate::ninres::extract_ninres;
 
 use itertools::Itertools;
 use nfd2::Response;
