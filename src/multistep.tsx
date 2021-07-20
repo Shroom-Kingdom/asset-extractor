@@ -45,7 +45,7 @@ export const MultiStep: FC<{
           flexDirection: 'column',
           alignItems: 'flex-start',
           flex: '1 1 auto',
-          maxHeight: 'calc(100vh - 5rem)',
+          maxHeight: 'calc(100vh - 7rem)',
           paddingTop: '1rem'
         }}
       >
