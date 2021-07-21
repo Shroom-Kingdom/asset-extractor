@@ -15,6 +15,7 @@ export const App: FC = () => {
   const [extractProgress, setExtractProgress] = useState<number>(0);
   const [extractMessages, setExtractMessages] = useState<string>('');
   const [extractStep, setExtractStep] = useState<string>('');
+  const [bundleData, setBundleData] = useState<boolean>(false);
   const messages = useRef(extractMessages);
   let extractMessageTimeout: number | null = null;
 
@@ -70,6 +71,7 @@ export const App: FC = () => {
       setExtractMessages('');
       setExtractStep('');
       await invoke('extract_assets');
+      setBundleData(true);
     } catch (err) {
       setExtractProgress(0);
       console.error(err);
@@ -107,6 +109,7 @@ export const App: FC = () => {
           backDisabled: loading
         }
       ]}
+      bundleData={bundleData}
     ></MultiStep>
   );
 };

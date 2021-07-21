@@ -1,29 +1,38 @@
 use crate::Result;
 
-use image::{DynamicImage, ImageBuffer};
+use image::{DynamicImage, ImageBuffer, ImageOutputFormat};
 use ninres::{Bfres, EmbeddedFile, NinRes, NinResFile, Sarc};
 use std::{
-    cmp, fs,
+    cmp,
+    io::Cursor,
     path::{self, PathBuf},
+    sync::RwLock,
 };
 
-pub fn extract_ninres(file: &NinResFile, mut path: PathBuf) -> Result<()> {
-    path = PathBuf::from("/home/marior/ninres");
-    if !path.exists() {
-        fs::create_dir_all(path.clone())?;
-    }
+pub fn bundle_ninres(
+    file: &NinResFile,
+    builder: &RwLock<tar::Builder<Cursor<Vec<u8>>>>,
+    path: PathBuf,
+    mtime: u64,
+) -> Result<()> {
     match file {
         NinResFile::Bfres(bfres) => {
-            extract_bfres(bfres, path.clone(), path)?;
+            extract_bfres(bfres, builder, path.clone(), path, mtime)?;
         }
         NinResFile::Sarc(sarc) => {
-            extract_sarc(sarc, path.clone(), path)?;
+            extract_sarc(sarc, builder, path.clone(), path, mtime)?;
         }
     }
     Ok(())
 }
 
-fn extract_bfres(bfres: &Bfres, out_path: PathBuf, base_path: PathBuf) -> Result<()> {
+fn extract_bfres(
+    bfres: &Bfres,
+    builder: &RwLock<tar::Builder<Cursor<Vec<u8>>>>,
+    out_path: PathBuf,
+    base_path: PathBuf,
+    mtime: u64,
+) -> Result<()> {
     for file in bfres.get_embedded_files().iter() {
         match file {
             EmbeddedFile::BNTX(bntx) => {
@@ -53,11 +62,19 @@ fn extract_bfres(bfres: &Bfres, out_path: PathBuf, base_path: PathBuf) -> Result
                                 texture.get_name(),
                                 tex_count
                             ));
-                            let mut path = base_path.clone();
-                            path.push(file_name);
-                            if let Err(_err) = image.save(path) {
-                                // skip
-                            }
+                            let mut image_data = vec![];
+                            image.write_to(&mut image_data, ImageOutputFormat::Png)?;
+
+                            let mut header = tar::Header::new_gnu();
+                            header.set_size(image_data.len() as u64);
+                            header.set_mode(0o644);
+                            header.set_mtime(mtime);
+                            header.set_cksum();
+                            builder.write().unwrap().append_data(
+                                &mut header,
+                                file_name,
+                                &image_data[..],
+                            )?;
                         }
                     }
                 }
@@ -67,7 +84,13 @@ fn extract_bfres(bfres: &Bfres, out_path: PathBuf, base_path: PathBuf) -> Result
     Ok(())
 }
 
-fn extract_sarc(sarc: &Sarc, out_path: PathBuf, base_path: PathBuf) -> Result<()> {
+fn extract_sarc(
+    sarc: &Sarc,
+    builder: &RwLock<tar::Builder<Cursor<Vec<u8>>>>,
+    out_path: PathBuf,
+    base_path: PathBuf,
+    mtime: u64,
+) -> Result<()> {
     sarc.get_sfat_nodes()
         .iter()
         .map(move |sfat| -> Result<_> {
@@ -88,13 +111,13 @@ fn extract_sarc(sarc: &Sarc, out_path: PathBuf, base_path: PathBuf) -> Result<()
                             let mut path0 = path.clone();
                             path0.pop();
                             path0.push(path.file_stem().unwrap());
-                            extract_bfres(bfres, path0, base_path.clone())?;
+                            extract_bfres(bfres, builder, path0, base_path.clone(), mtime)?;
                         }
                         NinResFile::Sarc(sarc) => {
                             let mut path0 = path.clone();
                             path0.pop();
                             path0.push(path.file_stem().unwrap());
-                            extract_sarc(sarc, path0, base_path.clone())?;
+                            extract_sarc(sarc, builder, path0, base_path.clone(), mtime)?;
                         }
                     }
                 }

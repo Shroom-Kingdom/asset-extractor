@@ -22,7 +22,8 @@ ninres = { git = "https://github.com/Tarnadas/ninres-rs.git", features = ["bfres
 rayon = "1"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.0-beta.4", features = ["api-all"] }
+tar = "0.4"
+tauri = { version = "1.0.0-beta.5", features = ["api-all"] }
 tempfile = "3"
 thiserror = "1"
 
@@ -34,5 +35,11 @@ custom-protocol = [ "tauri/custom-protocol" ]
 codegen-units = 1
 lto = true
 
+[profile.dev.package.image]
+opt-level = 3
+
 [profile.dev.package.ninres]
+opt-level = 3
+
+[profile.dev.package.tar]
 opt-level = 3

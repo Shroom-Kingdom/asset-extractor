@@ -1,6 +1,7 @@
 import React, { FC, ReactElement, useState } from 'react';
 
 import { Button, Row } from '@geist-ui/react';
+import { invoke } from '@tauri-apps/api';
 
 export const MultiStep: FC<{
   steps: {
@@ -12,7 +13,8 @@ export const MultiStep: FC<{
     nextIcon?: JSX.Element;
     nextDisabled?: boolean;
   }[];
-}> = ({ steps }) => {
+  bundleData: boolean;
+}> = ({ steps, bundleData }) => {
   const [currentStep, setCurrentStep] = useState(0);
 
   const navigateBackward = () => {
@@ -22,6 +24,10 @@ export const MultiStep: FC<{
     setCurrentStep(Math.min(currentStep + 1, steps.length));
     const onNext = steps[currentStep].onNext;
     if (onNext) onNext();
+  };
+
+  const download = async () => {
+    await invoke('save_bundle_data');
   };
 
   return (
@@ -55,7 +61,9 @@ export const MultiStep: FC<{
         <Row justify="space-around">
           <Button
             onClick={navigateBackward}
-            style={{ visibility: currentStep === 0 ? 'hidden' : undefined }}
+            style={{
+              visibility: currentStep === 0 || bundleData ? 'hidden' : undefined
+            }}
             type="secondary"
             disabled={steps[currentStep].backDisabled}
             ghost
@@ -63,16 +71,19 @@ export const MultiStep: FC<{
             Back
           </Button>
           <Button
-            onClick={navigateForward}
+            onClick={bundleData ? download : navigateForward}
             style={{
-              visibility: currentStep + 1 >= steps.length ? 'hidden' : undefined
+              visibility:
+                !bundleData && currentStep + 1 >= steps.length
+                  ? 'hidden'
+                  : undefined
             }}
             type="success"
             iconRight={steps[currentStep].nextIcon ?? undefined}
             disabled={steps[currentStep].nextDisabled}
             ghost
           >
-            {steps[currentStep].nextLabel ?? 'Next'}
+            {bundleData ? 'Save' : steps[currentStep].nextLabel ?? 'Next'}
           </Button>
         </Row>
       </div>

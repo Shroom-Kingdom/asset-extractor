@@ -15,6 +15,8 @@ pub enum Error {
     TauriApi(String),
     #[error("[NinRes]: {}", 0)]
     NinRes(String),
+    #[error("[Image]: {}", 0)]
+    Image(String),
     #[error("File select canceled")]
     FileSelectCanceled,
     #[error("File extension not supported")]
@@ -48,5 +50,11 @@ impl From<tauri::api::Error> for Error {
 impl From<ninres::NinResError> for Error {
     fn from(err: ninres::NinResError) -> Error {
         Error::NinRes(format!("{:?}", err))
+    }
+}
+
+impl From<image::ImageError> for Error {
+    fn from(err: image::ImageError) -> Error {
+        Error::Image(format!("{:?}", err))
     }
 }

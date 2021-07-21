@@ -40,6 +40,7 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
+ "tar",
  "tauri",
  "tauri-build",
  "tempfile",
