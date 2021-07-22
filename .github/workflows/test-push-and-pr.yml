@@ -40,19 +40,31 @@ jobs:
         run: |
           yarn install
 
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build assets
+        run: |
+          yarn build
+
       - name: Set opt level
         run: |
           sed -i -e 's/opt-level = 3/opt-level = 0/g' src-tauri/Cargo.toml
 
-      - name: Check
+      - name: Cargo Check
         run: |
           cd src-tauri && cargo check
 
-      - name: Fmt
+      - name: Cargo Fmt
         run: |
           cd src-tauri && cargo fmt -- --check
 
-      - name: Clippy
+      - name: Cargo Clippy
         run: |
           cd src-tauri && cargo clippy -- -D warnings
 
@@ -75,18 +87,30 @@ jobs:
           node-version: '16'
           cache: 'yarn'
 
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build assets
+        run: |
+          yarn build
+
       - name: Set opt level
         run: |
           sed -i -e 's/opt-level = 3/opt-level = 0/g' src-tauri/Cargo.toml
 
-      - name: Check
+      - name: Cargo Check
         run: |
           cd src-tauri && cargo check
 
-      - name: Fmt
+      - name: Cargo Fmt
         run: |
           cd src-tauri && cargo fmt -- --check
 
-      - name: Clippy
+      - name: Cargo Clippy
         run: |
           cd src-tauri && cargo clippy -- -D warnings
