@@ -108,6 +108,7 @@ jobs:
       - name: Set environment variables
         run: |
           echo "VERSION=$(cat src-tauri/Cargo.toml | grep version | head -1 | sed 's/[\",(version = )]//g')" >> $GITHUB_ENV
+        shell: bash
 
       - uses: actions/cache@v2
         with:
