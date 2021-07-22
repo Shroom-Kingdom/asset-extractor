@@ -87,6 +87,10 @@ jobs:
           node-version: '16'
           cache: 'yarn'
 
+      - name: Install Node dependencies
+        run: |
+          yarn install
+
       - uses: actions/cache@v2
         with:
           path: |
