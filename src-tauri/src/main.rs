@@ -14,7 +14,7 @@ use bundle::bundle_assets;
 use itertools::Itertools;
 use nfd2::Response;
 use std::{
-    env,
+    env, fs,
     path::{Path, PathBuf},
     sync::{Arc, RwLock},
 };
@@ -93,8 +93,8 @@ fn remove_file(file_name: String, state: State<AppState>) -> Vec<PathBuf> {
 #[tauri::command]
 async fn extract_assets(state: State<'_, AppState>, window: Window) -> Result<()> {
     let files = state.selected_files.read().unwrap().clone();
-    let progress = Arc::new(RwLock::new(0));
-    let max_progress = files.iter().fold(1u32, |acc, file| {
+    let progress = Arc::new(RwLock::new(0f64));
+    let max_progress = files.iter().fold(3u32, |acc, file| {
         let file_name = file.to_string_lossy();
         if file_name.ends_with(".xci") {
             acc + 2
@@ -175,7 +175,7 @@ fn save_bundle_data(state: State<AppState>) -> Result<()> {
                 file_path.set_extension("tar");
             }
             if let Some(bundle_data) = &*state.bundle_data.read().unwrap() {
-                std::fs::write(file_path, bundle_data)?;
+                fs::write(file_path, bundle_data)?;
             }
             Ok(())
         }
@@ -185,10 +185,10 @@ fn save_bundle_data(state: State<AppState>) -> Result<()> {
 
 pub fn increase_progress(
     window: Window,
-    progress: Arc<RwLock<u32>>,
+    progress: Arc<RwLock<f64>>,
     max_progress: u32,
 ) -> Result<()> {
-    let p = *progress.read().unwrap() + 1;
+    let p = *progress.read().unwrap() + 1.;
     *progress.write().unwrap() = p;
     let extract_progress = (p as f64 / max_progress as f64) * 100.;
     window.emit("extract_progress", extract_progress)?;

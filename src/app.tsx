@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import * as Icon from '@geist-ui/react-icons';
 import { invoke } from '@tauri-apps/api/tauri';
@@ -25,8 +25,7 @@ export const App: FC = () => {
       setExtractProgress(event.payload as number);
     });
     const messageListener = current.listen('extract_message', event => {
-      messages.current += event.payload;
-      messages.current += '\n';
+      messages.current = event.payload as string;
       if (!extractMessageTimeout) {
         extractMessageTimeout = setTimeout(() => {
           setExtractMessages(messages.current);
@@ -46,25 +45,28 @@ export const App: FC = () => {
     };
   }, []);
 
-  const handleAddFiles = async () => {
+  const handleAddFiles = useCallback(async () => {
     try {
       const files = await invoke<string[]>('add_files');
       setAssetFiles(files);
     } catch (err) {
       console.error(err);
     }
-  };
+  }, []);
 
-  const handleRemoveFile = (fileName: string) => async () => {
-    try {
-      const files = await invoke<string[]>('remove_file', { fileName });
-      setAssetFiles(files);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  const handleRemoveFile = useCallback(
+    (fileName: string) => async () => {
+      try {
+        const files = await invoke<string[]>('remove_file', { fileName });
+        setAssetFiles(files);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    []
+  );
 
-  const handleStart = async () => {
+  const handleStart = useCallback(async () => {
     try {
       setLoading(true);
       setExtractProgress(0);
@@ -77,7 +79,7 @@ export const App: FC = () => {
       console.error(err);
     }
     setLoading(false);
-  };
+  }, []);
 
   return (
     <MultiStep

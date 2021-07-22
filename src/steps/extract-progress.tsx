@@ -7,16 +7,7 @@ export const ExtractProgress: FC<{
   extractMessages: string;
   extractStep: string;
 }> = ({ extractProgress, extractMessages, extractStep }) => {
-  const pre = useRef<any>(null);
-  if (pre.current != null) {
-    pre.current.scrollTop = pre.current.scrollHeight;
-    setTimeout(
-      pre.current.scroll({
-        bottom: 0
-      }),
-      50
-    );
-  }
+  const pre = useRef<HTMLPreElement>(null);
   return (
     <>
       <div style={{ width: '100%', minHeight: '0.625rem' }}>
@@ -32,12 +23,10 @@ export const ExtractProgress: FC<{
       <pre
         ref={pre}
         style={{
-          background: 'black',
-          color: 'white',
-          flex: '1 1 auto',
-          overflowY: 'auto',
           maxWidth: '100%',
-          minWidth: '100%'
+          minWidth: '100%',
+          whiteSpace: 'break-spaces',
+          wordBreak: 'break-word'
         }}
       >
         {extractMessages}

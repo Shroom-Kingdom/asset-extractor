@@ -17,7 +17,7 @@ pub async fn extract_xci(
     romfs_dir: &Path,
     exefs_dir: &Path,
     file: &Path,
-    progress: Arc<RwLock<u32>>,
+    progress: Arc<RwLock<f64>>,
     max_progress: u32,
     file_message: &str,
 ) -> Result<()> {
