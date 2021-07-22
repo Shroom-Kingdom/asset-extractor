@@ -7,7 +7,7 @@
     "serve": "webpack-dev-server -d --env=dev --hmr",
     "build": "yarn clean && webpack --env=prod",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "clean": "rimraf ./dist"
+    "clean": "yarn rimraf ./dist"
   },
   "dependencies": {
     "@geist-ui/react": "^2",
