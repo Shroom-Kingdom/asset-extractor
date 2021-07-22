@@ -61,7 +61,8 @@ pub async fn extract_xci(
 
     for dir_entry in read_dir(dir.path())? {
         let dir_entry = dir_entry?;
-        extract_nca(window.clone(), dir.path(), &dir_entry, romfs_dir, exefs_dir).await?;
+        let window = window.clone();
+        extract_nca(window, dir.path(), &dir_entry, romfs_dir, exefs_dir).await?;
     }
     increase_progress(window.clone(), progress.clone(), max_progress)?;
 

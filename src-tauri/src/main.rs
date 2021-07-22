@@ -16,7 +16,7 @@ use nfd2::Response;
 use std::{
     env, fs,
     path::{Path, PathBuf},
-    sync::{Arc, RwLock},
+    sync::{Arc, Mutex, RwLock},
 };
 use tauri::{State, Window};
 use tempfile::tempdir;
@@ -121,9 +121,10 @@ async fn extract_assets(state: State<'_, AppState>, window: Window) -> Result<()
             "extract_step",
             format!("{}\nExtracting XCI...", file_message),
         )?;
+        let window = window.clone();
         if file_name.ends_with(".xci") {
             extract_xci(
-                window.clone(),
+                window,
                 &dir,
                 &romfs_dir,
                 &exefs_dir,
@@ -192,5 +193,20 @@ pub fn increase_progress(
     *progress.write().unwrap() = p;
     let extract_progress = (p as f64 / max_progress as f64) * 100.;
     window.emit("extract_progress", extract_progress)?;
+    Ok(())
+}
+
+pub fn increase_progress_sync(
+    window: Arc<Mutex<Window>>,
+    progress: Arc<RwLock<f64>>,
+    max_progress: u32,
+) -> Result<()> {
+    let p = *progress.read().unwrap() + 1.;
+    *progress.write().unwrap() = p;
+    let extract_progress = (p as f64 / max_progress as f64) * 100.;
+    window
+        .lock()
+        .unwrap()
+        .emit("extract_progress", extract_progress)?;
     Ok(())
 }
