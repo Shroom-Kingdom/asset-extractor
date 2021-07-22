@@ -35,11 +35,8 @@ custom-protocol = [ "tauri/custom-protocol" ]
 codegen-units = 1
 lto = true
 
-[profile.dev.package.image]
-opt-level = 3
+[profile.dev]
+opt-level = 1
 
-[profile.dev.package.ninres]
-opt-level = 3
-
-[profile.dev.package.tar]
+[profile.dev.package.'*']
 opt-level = 3
