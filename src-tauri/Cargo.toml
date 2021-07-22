@@ -1,15 +1,13 @@
 [package]
 name = "app"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "Shroom Kingdom Asset Extractor"
+authors = ["Shroom Kingdom <info@shroomkingdom.net>"]
+license = "MIT"
+repository = "https://github.com/Shroom-Kingdom/asset-extractor"
 default-run = "app"
 edition = "2018"
 build = "src/build.rs"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
 tauri-build = { version = "1.0.0-beta.2" }

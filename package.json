@@ -1,6 +1,6 @@
 {
   "name": "asset-extractor",
-  "version": "1.0.0",
+  "version": "see src-tauri/Cargo.toml",
   "license": "MIT",
   "scripts": {
     "start": "yarn serve",
