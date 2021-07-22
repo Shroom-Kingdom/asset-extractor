@@ -101,6 +101,10 @@ jobs:
           node-version: '16'
           cache: 'yarn'
 
+      - name: Install Node dependencies
+        run: |
+          yarn install
+
       - name: Set environment variables
         run: |
           echo "VERSION=$(cat src-tauri/Cargo.toml | grep version | head -1 | sed 's/[\",(version = )]//g')" >> $GITHUB_ENV
