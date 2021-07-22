@@ -45,21 +45,16 @@ jobs:
           sed -i -e 's/opt-level = 3/opt-level = 0/g' src-tauri/Cargo.toml
 
       - name: Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: |
+          cd src-tauri && cargo check
 
       - name: Fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: -- --check
+        run: |
+          cd src-tauri && cargo fmt -- --check
 
       - name: Clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+        run: |
+          cd src-tauri && cargo clippy -- -D warnings
 
   test-windows:
     runs-on: windows-latest
@@ -80,18 +75,18 @@ jobs:
           node-version: '16'
           cache: 'yarn'
 
+      - name: Set opt level
+        run: |
+          sed -i -e 's/opt-level = 3/opt-level = 0/g' src-tauri/Cargo.toml
+
       - name: Check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: |
+          cd src-tauri && cargo check
 
       - name: Fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: -- --check
+        run: |
+          cd src-tauri && cargo fmt -- --check
 
       - name: Clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
+        run: |
+          cd src-tauri && cargo clippy -- -D warnings

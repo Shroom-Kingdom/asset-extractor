@@ -53,7 +53,11 @@ jobs:
             src-tauri/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Build
+      - name: Build assets
+        run: |
+          yarn build
+
+      - name: Build app
         run: |
           yarn tauri build
 
@@ -109,11 +113,13 @@ jobs:
             src-tauri/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+      - name: Build assets
+        run: |
+          yarn build
+
+      - name: Build app
+        run: |
+          yarn tauri build
 
       - name: Compress release
         env:
@@ -134,42 +140,5 @@ jobs:
           tag: ${{ github.sha }}
           name: "SMMDB Client ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
           artifacts: "target/release/smmdb-client-windows.tar.gz"
-          draft: true
-          allowUpdates: true
-
-  publish-macos:
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install nightly
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly-2021-04-25
-          override: true
-      - name: Set environment variables
-        run: |
-          echo "VERSION=$(cat Cargo.toml | grep version | head -1 | sed 's/[\",(version = )]//g')" >> $GITHUB_ENV
-      - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-      - name: Compress release
-        env:
-          GZIP: -9
-        run: |
-          cd target/release && \
-          tar czvf smmdb-client-macos.tar.gz smmdb
-      - name: Update Draft Release
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit: ${{ github.sha }}
-          tag: ${{ github.sha }}
-          name: "SMMDB Client ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
-          artifacts: "target/release/smmdb-client-macos.tar.gz"
           draft: true
           allowUpdates: true
