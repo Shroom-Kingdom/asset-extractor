@@ -129,9 +129,8 @@ jobs:
         env:
           GZIP: -9
         run: |
-          ls src-tauri/target/release/bundle
-          cd src-tauri/target/release/bundle && \
-          tar czvf asset-extractor_${{ env.VERSION }}_amd64.tar.gz asset-extractor_${{ env.VERSION }}_amd64.exe
+          cd src-tauri/target/release/bundle/msi
+          tar czvf asset-extractor_${{ env.VERSION }}_x64.tar.gz asset-extractor_${{ env.VERSION }}_x64.msi
         shell: bash
 
       - name: Update Draft Release
@@ -143,6 +142,6 @@ jobs:
           commit: ${{ github.sha }}
           tag: ${{ github.sha }}
           name: "Shroom Kingdom Assets Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
-          artifacts: "src-tauri/target/release/bundle/asset-extractor_${{ env.VERSION }}_amd64.tar.gz"
+          artifacts: "src-tauri/target/release/bundle/msi/asset-extractor_${{ env.VERSION }}_x64.tar.gz"
           draft: true
           allowUpdates: true
