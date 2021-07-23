@@ -1,6 +1,6 @@
 {
   "package": {
-    "productName": "Asset Extractor",
+    "productName": "asset-extractor",
     "version": "0.1.0"
   },
   "build": {
