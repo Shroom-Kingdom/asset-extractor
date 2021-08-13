@@ -31,7 +31,7 @@ export const AssetSelect: FC<{
       <div>Current prod.keys file: {prodKey ?? '-'}</div>
       <div
         style={{
-          maxWidth: '24rem',
+          maxWidth: '36rem',
           minWidth: '24rem'
         }}
       >
@@ -50,9 +50,10 @@ export const AssetSelect: FC<{
               auto
               size="mini"
               type="secondary-light"
+              style={prodKey === key ? { backgroundColor: 'darkgreen' } : {}}
               disabled={loading}
-              iconRight={<Icon.Key />}
-              onClick={handleSetProdKey(key)}
+              iconRight={prodKey === key ? <Icon.Check /> : <Icon.Key />}
+              onClick={prodKey !== key ? handleSetProdKey(key) : undefined}
             >
               Select
             </Button>
