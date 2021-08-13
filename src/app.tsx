@@ -15,6 +15,10 @@ export const App: FC = () => {
   const [prodKey, setProdKey] = useState<string | null>(null);
   const [assetFiles, setAssetFiles] = useState<string[]>([]);
   const [extractProgress, setExtractProgress] = useState<number>(0);
+  const [extractError, setExtractError] = useState<Record<
+    string,
+    string
+  > | null>(null);
   const [extractMessages, setExtractMessages] = useState<string>('');
   const [extractStep, setExtractStep] = useState<string>('');
   const [bundleData, setBundleData] = useState<boolean>(false);
@@ -105,12 +109,14 @@ export const App: FC = () => {
     try {
       setLoading(true);
       setExtractProgress(0);
+      setExtractError(null);
       setExtractMessages('');
       setExtractStep('');
       await invoke('extract_assets');
       setBundleData(true);
     } catch (err) {
       setExtractProgress(0);
+      setExtractError(err);
       console.error(err);
     }
     setLoading(false);
@@ -149,6 +155,7 @@ export const App: FC = () => {
               extractStep={extractStep}
               extractMessages={extractMessages}
               extractProgress={extractProgress}
+              extractError={extractError}
             />
           ),
 

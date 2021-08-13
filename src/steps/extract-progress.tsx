@@ -1,12 +1,13 @@
 import React, { FC, useRef } from 'react';
 
-import { Progress, Text } from '@geist-ui/react';
+import { Note, Progress, Text } from '@geist-ui/react';
 
 export const ExtractProgress: FC<{
   extractProgress: number;
   extractMessages: string;
   extractStep: string;
-}> = ({ extractProgress, extractMessages, extractStep }) => {
+  extractError: Record<string, string> | null;
+}> = ({ extractProgress, extractMessages, extractStep, extractError }) => {
   const pre = useRef<HTMLPreElement>(null);
   return (
     <>
@@ -31,6 +32,13 @@ export const ExtractProgress: FC<{
       >
         {extractMessages}
       </pre>
+      {extractError && (
+        <Note label="Error" type="error">
+          {Object.entries(extractError).map(
+            ([key, value]) => `[${key}]: ${value}`
+          )}
+        </Note>
+      )}
     </>
   );
 };
