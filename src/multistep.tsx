@@ -42,7 +42,8 @@ export const MultiStep: FC<{
         margin: '0 auto',
         padding: '0 16pt',
         boxSizing: 'border-box',
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
       <div
@@ -50,10 +51,12 @@ export const MultiStep: FC<{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-start',
-          flex: '1 1 auto',
+          flex: '1 0 auto',
           maxHeight: 'calc(100vh - 7rem)',
-          paddingTop: '1rem'
+          paddingTop: '1rem',
+          overflow: 'auto'
         }}
+        className="flex-no-shrink"
       >
         {steps[currentStep].component}
       </div>

@@ -17,6 +17,7 @@ pub async fn extract_xci(
     romfs_dir: &Path,
     exefs_dir: &Path,
     file: &Path,
+    prod_key: &Path,
     progress: Arc<RwLock<f64>>,
     max_progress: u32,
     file_message: &str,
@@ -25,7 +26,7 @@ pub async fn extract_xci(
         .args(vec![
             "--intype=xci",
             "-k",
-            "/home/marior/hactool/prod.keys",
+            &prod_key.to_string_lossy(),
             &format!("--securedir={}", dir.path().to_string_lossy()),
             &file.to_string_lossy(),
         ])
@@ -62,7 +63,15 @@ pub async fn extract_xci(
     for dir_entry in read_dir(dir.path())? {
         let dir_entry = dir_entry?;
         let window = window.clone();
-        extract_nca(window, dir.path(), &dir_entry, romfs_dir, exefs_dir).await?;
+        extract_nca(
+            window,
+            dir.path(),
+            &dir_entry,
+            romfs_dir,
+            exefs_dir,
+            prod_key,
+        )
+        .await?;
     }
     increase_progress(window.clone(), progress.clone(), max_progress)?;
 
@@ -75,13 +84,14 @@ async fn extract_nca(
     dir_entry: &DirEntry,
     romfs_dir: &Path,
     exefs_dir: &Path,
+    prod_key: &Path,
 ) -> Result<()> {
     let (mut rx_sidecar, _) = Command::new_sidecar("hactool")
         .expect("failed to create `hactool` binary command")
         .args(vec![
             "-x",
             "-k",
-            "/home/marior/hactool/prod.keys",
+            &prod_key.to_string_lossy(),
             &format!("--romfsdir={}", romfs_dir.to_string_lossy()),
             &format!("--exefsdir={}", exefs_dir.to_string_lossy()),
             &dir.to_path_buf()

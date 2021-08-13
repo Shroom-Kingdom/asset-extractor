@@ -13,6 +13,7 @@ build = "src/build.rs"
 tauri-build = { version = "1.0.0-beta.2" }
 
 [dependencies]
+dirs = "3"
 image = { version = "0.23", default-features = false, features = ["png"] }
 itertools = "0.10"
 nfd2 = "0.3"

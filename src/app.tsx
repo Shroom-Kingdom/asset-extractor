@@ -11,6 +11,8 @@ import { ExtractProgress } from './steps/extract-progress';
 
 export const App: FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const [keys, setKeys] = useState<string[]>([]);
+  const [prodKey, setProdKey] = useState<string | null>(null);
   const [assetFiles, setAssetFiles] = useState<string[]>([]);
   const [extractProgress, setExtractProgress] = useState<number>(0);
   const [extractMessages, setExtractMessages] = useState<string>('');
@@ -43,6 +45,39 @@ export const App: FC = () => {
         (await stepListener)();
       })();
     };
+  }, []);
+
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const keys = await invoke<string[]>('find_keys');
+        setKeys(keys);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    run();
+  }, []);
+
+  const handleSetProdKey = useCallback(
+    (prodKey: string) => async () => {
+      try {
+        await invoke('set_prod_key', { prodKey });
+        setProdKey(prodKey);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    []
+  );
+
+  const handleSelectProdKey = useCallback(async () => {
+    try {
+      const prodKey = await invoke<string>('select_prod_key');
+      setProdKey(prodKey);
+    } catch (err) {
+      console.error(err);
+    }
   }, []);
 
   const handleAddFiles = useCallback(async () => {
@@ -89,7 +124,11 @@ export const App: FC = () => {
           component: (
             <AssetSelect
               loading={loading}
+              keys={keys}
+              prodKey={prodKey}
               assetFiles={assetFiles}
+              handleSetProdKey={handleSetProdKey}
+              handleSelectProdKey={handleSelectProdKey}
               handleAddFiles={handleAddFiles}
               handleRemoveFile={handleRemoveFile}
             />
@@ -97,7 +136,12 @@ export const App: FC = () => {
           onNext: handleStart,
           nextLabel: 'Start',
           nextIcon: <Icon.PlayCircle />,
-          nextDisabled: assetFiles.length === 0
+          nextDisabled:
+            assetFiles.length === 0 ||
+            (!!assetFiles.find(
+              file => file.endsWith('.xci') || file.endsWith('.nsp')
+            ) &&
+              prodKey == null)
         },
         {
           component: (

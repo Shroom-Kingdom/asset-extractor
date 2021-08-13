@@ -5,6 +5,7 @@
 
 mod bundle;
 mod error;
+mod keys;
 mod ninres;
 mod xci;
 
@@ -23,6 +24,8 @@ use tempfile::tempdir;
 use xci::extract_xci;
 
 struct AppState {
+    keys: RwLock<Vec<PathBuf>>,
+    prod_key: RwLock<Option<PathBuf>>,
     selected_files: Arc<RwLock<Vec<PathBuf>>>,
     bundle_data: RwLock<Option<Vec<u8>>>,
 }
@@ -30,10 +33,15 @@ struct AppState {
 fn main() {
     tauri::Builder::default()
         .manage(AppState {
+            keys: RwLock::new(vec![]),
+            prod_key: RwLock::new(None),
             selected_files: Arc::new(RwLock::new(vec![])),
             bundle_data: RwLock::new(None),
         })
         .invoke_handler(tauri::generate_handler![
+            find_keys,
+            set_prod_key,
+            select_prod_key,
             add_files,
             remove_file,
             extract_assets,
@@ -41,6 +49,34 @@ fn main() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[tauri::command]
+fn find_keys(state: State<AppState>) -> Result<Vec<PathBuf>> {
+    let keys = keys::find_keys()?;
+    *state.keys.write().unwrap() = keys.clone();
+    Ok(keys)
+}
+
+#[tauri::command]
+fn set_prod_key(prod_key: PathBuf, state: State<AppState>) {
+    *state.prod_key.write().unwrap() = Some(prod_key);
+}
+
+#[tauri::command]
+fn select_prod_key(state: State<AppState>) -> Result<PathBuf> {
+    let result = nfd2::dialog().open()?;
+
+    match result {
+        Response::Okay(file_path) => {
+            *state.prod_key.write().unwrap() = Some(file_path);
+            Ok(state.prod_key.read().unwrap().clone().unwrap())
+        }
+        Response::OkayMultiple(_) => {
+            unreachable!();
+        }
+        Response::Cancel => Err(error::Error::FileSelectCanceled),
+    }
 }
 
 #[tauri::command]
@@ -93,6 +129,12 @@ fn remove_file(file_name: String, state: State<AppState>) -> Vec<PathBuf> {
 #[tauri::command]
 async fn extract_assets(state: State<'_, AppState>, window: Window) -> Result<()> {
     let files = state.selected_files.read().unwrap().clone();
+    let prod_key = state
+        .prod_key
+        .read()
+        .unwrap()
+        .clone()
+        .ok_or(error::Error::ProdKeyNotSet)?;
     let progress = Arc::new(RwLock::new(0f64));
     let max_progress = files.iter().fold(3u32, |acc, file| {
         let file_name = file.to_string_lossy();
@@ -129,6 +171,7 @@ async fn extract_assets(state: State<'_, AppState>, window: Window) -> Result<()
                 &romfs_dir,
                 &exefs_dir,
                 file,
+                &prod_key,
                 progress.clone(),
                 max_progress,
                 &file_message,

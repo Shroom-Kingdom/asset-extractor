@@ -21,6 +21,8 @@ pub enum Error {
     FileSelectCanceled,
     #[error("File extension not supported")]
     FileExtensionUnsupported,
+    #[error("Prod key not set")]
+    ProdKeyNotSet,
 }
 
 impl From<NfdError> for Error {
