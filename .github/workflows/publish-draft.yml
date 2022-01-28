@@ -126,14 +126,6 @@ jobs:
         run: |
           yarn tauri build
 
-      - name: Compress release
-        env:
-          GZIP: -9
-        run: |
-          cd src-tauri/target/release/bundle/msi
-          tar czvf asset-extractor_${{ env.VERSION }}_x64.tar.gz asset-extractor_${{ env.VERSION }}_x64.msi
-        shell: bash
-
       - name: Update Draft Release
         uses: ncipollo/release-action@v1
         env:
@@ -143,6 +135,6 @@ jobs:
           commit: ${{ github.sha }}
           tag: ${{ github.sha }}
           name: "Shroom Kingdom Assets Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
-          artifacts: "src-tauri/target/release/bundle/msi/asset-extractor_${{ env.VERSION }}_x64.tar.gz"
+          artifacts: "src-tauri/target/release/bundle/msi/asset-extractor_${{ env.VERSION }}_x64.msi"
           draft: true
           allowUpdates: true
