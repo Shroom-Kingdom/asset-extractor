@@ -1,8 +1,8 @@
 use crate::Result;
 
 use image::{
-    png::{CompressionType, FilterType, PngEncoder},
-    DynamicImage, GenericImageView, ImageBuffer,
+    codecs::png::{CompressionType, FilterType, PngEncoder},
+    DynamicImage, ImageBuffer, ImageEncoder,
 };
 use ninres::{Bfres, EmbeddedFile, NinRes, NinResFile, Sarc};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
@@ -102,7 +102,7 @@ fn extract_bfres(
                                                 CompressionType::Best,
                                                 FilterType::NoFilter,
                                             );
-                                            encoder.encode(
+                                            encoder.write_image(
                                                 image.as_bytes(),
                                                 image.width(),
                                                 image.height(),
@@ -136,7 +136,7 @@ fn extract_bfres(
                                 CompressionType::Best,
                                 FilterType::NoFilter,
                             );
-                            encoder.encode(
+                            encoder.write_image(
                                 image.as_bytes(),
                                 image.width(),
                                 image.height(),
@@ -183,7 +183,7 @@ fn extract_sarc(
                 };
 
                 if let Ok(file) = data.as_ninres() {
-                    path.set_extension(file.get_extension().to_string());
+                    path.set_extension(file.get_extension());
                     match &file {
                         NinResFile::Bfres(bfres) => {
                             let mut path0 = path.clone();

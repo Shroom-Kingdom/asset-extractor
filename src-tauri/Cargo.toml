@@ -10,11 +10,11 @@ edition = "2018"
 build = "src/build.rs"
 
 [build-dependencies]
-tauri-build = { version = "1.0.0-beta.4" }
+tauri-build = { version = "1.0.0-rc.4", features = [] }
 
 [dependencies]
 dirs = "4"
-image = { version = "0.23", default-features = false, features = ["png"] }
+image = { version = "0.24", default-features = false, features = ["png"] }
 itertools = "0.10"
 nfd2 = "0.3"
 ninres = { git = "https://github.com/Tarnadas/ninres-rs.git", features = ["bfres", "sarc", "zstd"] }
@@ -22,7 +22,7 @@ rayon = "1"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tar = "0.4"
-tauri = { version = "1.0.0-beta.8", features = ["api-all"] }
+tauri = { version = "1.0.0-rc.4", features = ["api-all"] }
 tempfile = "3"
 thiserror = "1"
 

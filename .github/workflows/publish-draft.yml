@@ -28,7 +28,7 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2021-11-25
+          toolchain: nightly-2022-02-23
           override: true
 
       - name: Install Node
@@ -92,7 +92,7 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2021-11-25
+          toolchain: nightly-2022-02-23
           override: true
 
       - name: Install Node
