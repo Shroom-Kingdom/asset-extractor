@@ -1,6 +1,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import * as Icon from '@geist-ui/react-icons';
+import { open } from '@tauri-apps/api/dialog';
 import { invoke } from '@tauri-apps/api/tauri';
 import { getCurrent } from '@tauri-apps/api/window';
 
@@ -9,11 +10,16 @@ import { Intro } from './steps/intro';
 import { MultiStep } from './multistep';
 import { ExtractProgress } from './steps/extract-progress';
 
+export interface RequiredFilesMissingError {
+  RequiredFilesMissing: string[];
+}
+
 export const App: FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [keys, setKeys] = useState<string[]>([]);
   const [prodKey, setProdKey] = useState<string | null>(null);
   const [assetFiles, setAssetFiles] = useState<string[]>([]);
+  const [filesMissing, setFilesMissing] = useState<string[] | null>(null);
   const [extractProgress, setExtractProgress] = useState<number>(0);
   const [extractError, setExtractError] = useState<Record<
     string,
@@ -86,10 +92,27 @@ export const App: FC = () => {
 
   const handleAddFiles = useCallback(async () => {
     try {
-      const files = await invoke<string[]>('add_files');
+      // const files = await invoke<string[]>('add_files');
+      const selectedFiles = await open({
+        multiple: true,
+        filters: [{ extensions: ['zip', '7z', 'xci'], name: '.zip,.7z,.xci' }]
+      });
+      console.log('FILES', selectedFiles);
+      const files = await invoke<string[]>('add_files_from_tauri', {
+        files: selectedFiles
+      });
       setAssetFiles(files);
-    } catch (err) {
-      console.error(err);
+
+      await invoke<string[]>('assert_added_files');
+      setFilesMissing(null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      if (err.RequiredFilesMissing) {
+        const filesMissingError = err as RequiredFilesMissingError;
+        setFilesMissing(filesMissingError.RequiredFilesMissing);
+      } else {
+        console.error(err);
+      }
     }
   }, []);
 
@@ -98,8 +121,19 @@ export const App: FC = () => {
       try {
         const files = await invoke<string[]>('remove_file', { fileName });
         setAssetFiles(files);
-      } catch (err) {
-        console.error(err);
+
+        if (files.length !== 0) {
+          await invoke<string[]>('assert_added_files');
+        }
+        setFilesMissing(null);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        if (err.RequiredFilesMissing) {
+          const filesMissingError = err as RequiredFilesMissingError;
+          setFilesMissing(filesMissingError.RequiredFilesMissing);
+        } else {
+          console.error(err);
+        }
       }
     },
     []
@@ -116,7 +150,7 @@ export const App: FC = () => {
       setBundleData(true);
     } catch (err) {
       setExtractProgress(0);
-      setExtractError(err);
+      setExtractError(err as unknown as Record<string, string>);
       console.error(err);
     }
     setLoading(false);
@@ -133,6 +167,7 @@ export const App: FC = () => {
               keys={keys}
               prodKey={prodKey}
               assetFiles={assetFiles}
+              filesMissing={filesMissing}
               handleSetProdKey={handleSetProdKey}
               handleSelectProdKey={handleSelectProdKey}
               handleAddFiles={handleAddFiles}

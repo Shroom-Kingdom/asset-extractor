@@ -1,3 +1,4 @@
+use glob::GlobError;
 use nfd2::error::NfdError;
 use serde::Serialize;
 use std::io;
@@ -17,12 +18,16 @@ pub enum Error {
     NinRes(String),
     #[error("[Image]: {}", 0)]
     Image(String),
+    #[error("[Glob]: {}", 0)]
+    Glob(String),
     #[error("File select canceled")]
     FileSelectCanceled,
     #[error("File extension not supported")]
     FileExtensionUnsupported,
     #[error("Prod key not set")]
     ProdKeyNotSet,
+    #[error("{}", 0)]
+    RequiredFilesMissing(Vec<String>),
 }
 
 impl From<NfdError> for Error {
@@ -58,5 +63,11 @@ impl From<ninres::NinResError> for Error {
 impl From<image::ImageError> for Error {
     fn from(err: image::ImageError) -> Error {
         Error::Image(format!("{:?}", err))
+    }
+}
+
+impl From<GlobError> for Error {
+    fn from(err: GlobError) -> Error {
+        Error::Glob(format!("{:?}", err))
     }
 }

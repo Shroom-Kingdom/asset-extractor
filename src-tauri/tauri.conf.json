@@ -22,7 +22,7 @@
         "icons/icon.ico"
       ],
       "resources": [],
-      "externalBin": ["bin/hactool"],
+      "externalBin": ["bin/hactool", "bin/7z"],
       "copyright": "",
       "category": "DeveloperTool",
       "shortDescription": "",

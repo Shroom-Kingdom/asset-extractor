@@ -2,7 +2,7 @@ use crate::{increase_progress_sync, ninres::bundle_ninres, Result};
 use ninres::NinRes;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use std::{
-    fs::{self, read_dir, DirEntry},
+    fs::{self, read_dir, DirEntry, ReadDir},
     io::Cursor,
     path::PathBuf,
     sync::{Arc, Mutex, RwLock},
@@ -37,12 +37,21 @@ pub fn bundle_assets(
     let mut max_completed = 0u32;
     let completed = Arc::new(RwLock::new(0u32));
     let start_progress = *progress.read().unwrap();
-    read_dir(model_dir.clone())?.for_each(|_| max_completed += 1);
-    read_dir(pack_dir.clone())?.for_each(|_| max_completed += 1);
-    let window = Arc::new(Mutex::new(window));
-    read_dir(model_dir)?
-        .chain(read_dir(pack_dir)?)
+
+    read_dir(model_dir.clone())
         .into_iter()
+        .flatten()
+        .for_each(|_| max_completed += 1);
+    read_dir(pack_dir.clone())
+        .into_iter()
+        .flatten()
+        .for_each(|_| max_completed += 1);
+
+    let window = Arc::new(Mutex::new(window));
+    read_dir(model_dir)
+        .into_iter()
+        .flatten()
+        .chain(read_dir(pack_dir).into_iter().flatten())
         .par_bridge()
         .map(|dir_entry| -> Result<_> {
             let dir_entry: DirEntry = dir_entry?;

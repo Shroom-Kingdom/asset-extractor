@@ -8,6 +8,7 @@ export const AssetSelect: FC<{
   keys: string[];
   prodKey: string | null;
   assetFiles: string[];
+  filesMissing: string[] | null;
   handleSetProdKey: (prodKey: string) => () => Promise<void>;
   handleSelectProdKey: () => Promise<void>;
   handleAddFiles: () => Promise<void>;
@@ -17,6 +18,7 @@ export const AssetSelect: FC<{
   keys,
   prodKey,
   assetFiles,
+  filesMissing,
   handleSetProdKey,
   handleSelectProdKey,
   handleAddFiles,
@@ -70,17 +72,26 @@ export const AssetSelect: FC<{
           {keys.length > 0 ? 'Manually select prod.keys' : 'Select prod.keys'}
         </Button>
       </div>
+
       <Text style={{ marginTop: '2rem' }}>
         Please select all your game resource files from Super Mario Maker 2:
       </Text>
-      <div style={{ maxWidth: '24rem', minWidth: '24rem' }}>
+      <div style={{ maxWidth: '36rem', minWidth: '24rem' }}>
         {assetFiles.map(assetFile => (
           <Row
             key={assetFile}
             style={{ marginBottom: '0.6rem' }}
             justify="space-between"
           >
-            <span>{assetFile}</span>
+            <span
+              style={{
+                flex: '1 1 auto',
+                marginRight: '1rem',
+                wordBreak: 'break-word'
+              }}
+            >
+              {assetFile}
+            </span>
             <Button
               auto
               size="mini"
@@ -92,6 +103,49 @@ export const AssetSelect: FC<{
           </Row>
         ))}
       </div>
+
+      {filesMissing && (
+        <div
+          style={{
+            maxWidth: '36rem',
+            minWidth: '24rem',
+            border: '2px solid #c4af0a',
+            borderRadius: '8px',
+            color: '#635801',
+            padding: '0.8rem',
+            margin: '0.6rem 0'
+          }}
+        >
+          <Row align="middle">
+            <Icon.AlertTriangle size={48} />
+            <div style={{ width: '1.2rem' }} />
+            <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+              Your assets are missing the following files in order to be able to
+              play in Shroom Kingdom:
+            </div>
+          </Row>
+          {filesMissing.map(file => (
+            <Row
+              key={file}
+              style={{ marginBottom: '0.3rem' }}
+              justify="space-between"
+            >
+              <span
+                style={{
+                  flex: '1 1 auto',
+                  marginRight: '1rem',
+                  wordBreak: 'break-word',
+                  color: 'red',
+                  fontSize: '0.8rem'
+                }}
+              >
+                {file}
+              </span>
+            </Row>
+          ))}
+        </div>
+      )}
+
       <Button
         type="success-light"
         disabled={loading}
