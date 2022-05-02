@@ -1,6 +1,6 @@
 use crate::Result;
 use std::{
-    fs::{self, create_dir_all, File},
+    fs::{create_dir_all, File},
     io,
     path::{Path, PathBuf},
 };
@@ -45,7 +45,7 @@ pub fn extract_zip(dir: &TempDir, file: &PathBuf) {
 
         #[cfg(unix)]
         {
-            use std::os::unix::fs::PermissionsExt;
+            use std::{fs, os::unix::fs::PermissionsExt};
 
             if let Some(mode) = file.unix_mode() {
                 fs::set_permissions(&outpath, fs::Permissions::from_mode(mode)).unwrap();
