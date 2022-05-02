@@ -92,13 +92,11 @@ export const App: FC = () => {
 
   const handleAddFiles = useCallback(async () => {
     try {
-      // const files = await invoke<string[]>('add_files');
       const selectedFiles = await open({
         multiple: true,
         filters: [{ extensions: ['zip', '7z', 'xci'], name: '.zip,.7z,.xci' }]
       });
-      console.log('FILES', selectedFiles);
-      const files = await invoke<string[]>('add_files_from_tauri', {
+      const files = await invoke<string[]>('add_files', {
         files: selectedFiles
       });
       setAssetFiles(files);

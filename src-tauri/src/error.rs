@@ -1,4 +1,4 @@
-use glob::GlobError;
+use glob::{GlobError, PatternError};
 use nfd2::error::NfdError;
 use serde::Serialize;
 use std::io;
@@ -20,6 +20,8 @@ pub enum Error {
     Image(String),
     #[error("[Glob]: {}", 0)]
     Glob(String),
+    #[error("[Pattern]: {}", 0)]
+    Pattern(String),
     #[error("File select canceled")]
     FileSelectCanceled,
     #[error("File extension not supported")]
@@ -28,6 +30,8 @@ pub enum Error {
     ProdKeyNotSet,
     #[error("{}", 0)]
     RequiredFilesMissing(Vec<String>),
+    #[error("Dir not found: {}", 0)]
+    DirNotFound(String),
 }
 
 impl From<NfdError> for Error {
@@ -69,5 +73,11 @@ impl From<image::ImageError> for Error {
 impl From<GlobError> for Error {
     fn from(err: GlobError) -> Error {
         Error::Glob(format!("{:?}", err))
+    }
+}
+
+impl From<PatternError> for Error {
+    fn from(err: PatternError) -> Error {
+        Error::Pattern(format!("{:?}", err))
     }
 }

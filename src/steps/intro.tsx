@@ -32,8 +32,18 @@ export const Intro: FC = () => {
         .
       </Text>
       <Text>
-        This software is in early access. You can currently only extract XCI
-        files. Support for NSP files and game mods will be added later.
+        If you do not own the game, you can go to{' '}
+        <a href="https://gamebanana.com/games/7348" target="_blank">
+          Gamebanana
+        </a>{' '}
+        and download mods. You will most likely need several mods to get all
+        assets that are required to play. Instead you can also download one of
+        our preset: [WIP]
+      </Text>
+      <Text>
+        This software is in early access. You can currently only extract XCI,
+        ZIP and 7z files. Support for NSP files and game mods will be added
+        later.
       </Text>
     </>
   );

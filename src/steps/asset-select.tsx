@@ -27,8 +27,8 @@ export const AssetSelect: FC<{
   return (
     <>
       <Text>
-        To decrypt your files, we need the prod.keys file from your Nintendo
-        Switch. If you only want to unpack mods, it is not required.
+        To decrypt your files (XCI or NSP), we need the prod.keys file from your
+        Nintendo Switch. If you only want to unpack mods, it is not required.
       </Text>
       <div>Current prod.keys file: {prodKey ?? '-'}</div>
       <div

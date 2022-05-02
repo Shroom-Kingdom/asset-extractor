@@ -1,24 +1,61 @@
-use crate::{increase_progress_sync, ninres::bundle_ninres, Result};
+use crate::{error::Error, increase_progress_sync, ninres::bundle_ninres, Result};
+use glob::glob;
 use ninres::NinRes;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use std::{
-    fs::{self, read_dir, DirEntry, ReadDir},
+    fs::{self, read_dir, DirEntry, File},
     io::Cursor,
-    path::PathBuf,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex, RwLock},
     time::SystemTime,
 };
 use tauri::Window;
 use tempfile::TempDir;
+use zip::ZipArchive;
+
+pub fn find_romfs_dir(dir: &TempDir) -> Result<PathBuf> {
+    let mut romfs_dir = None;
+    for entry in glob(&format!("{}/**/*", dir.path().display()))? {
+        let entry = entry?;
+        if entry.ends_with("romfs") {
+            romfs_dir = Some(entry);
+            break;
+        }
+    }
+    romfs_dir.ok_or_else(|| Error::DirNotFound("romfs".to_string()))
+}
+
+pub fn find_romfs_dir_in_zip_archive(archive: &mut ZipArchive<File>) -> Result<PathBuf> {
+    let mut romfs_dir = None;
+    if archive
+        .by_index(0)
+        .ok()
+        .and_then(|file| file.enclosed_name().map(|name| name.starts_with("romfs")))
+        .unwrap_or_default()
+    {
+        return Ok(PathBuf::from("romfs"));
+    }
+    for i in 0..archive.len() {
+        let file = archive.by_index(i).unwrap();
+        if let Some(name) = file.enclosed_name() {
+            if name.ends_with("romfs") {
+                romfs_dir = Some(name.to_owned());
+                break;
+            }
+        }
+    }
+    romfs_dir.ok_or_else(|| Error::DirNotFound("romfs".to_string()))
+}
 
 pub fn bundle_assets(
     window: Window,
-    dir: TempDir,
-    romfs_dir: PathBuf,
+    builder: &RwLock<tar::Builder<Cursor<Vec<u8>>>>,
+    dir: &TempDir,
+    romfs_dir: &Path,
     progress: Arc<RwLock<f64>>,
     max_progress: u32,
     file_message: &str,
-) -> Result<Vec<u8>> {
+) -> Result<()> {
     window
         .emit("extract_step", &format!("{}\nBundling...", file_message))
         .unwrap();
@@ -27,8 +64,6 @@ pub fn bundle_assets(
     let model_dir = romfs_dir.join("Model");
     let pack_dir = romfs_dir.join("Pack");
 
-    let cursor = Cursor::new(vec![]);
-    let builder = RwLock::new(tar::Builder::new(cursor));
     let mtime = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
         .unwrap()
@@ -62,7 +97,7 @@ pub fn bundle_assets(
             window.lock().unwrap().emit("extract_message", line)?;
             let file_data = fs::read(dir_entry.path())?;
             if let Ok(ninres) = file_data.as_ninres() {
-                bundle_ninres(&ninres, &builder, ninres_dir.clone(), mtime)?;
+                bundle_ninres(&ninres, builder, ninres_dir.clone(), mtime)?;
             }
             let c = *completed.read().unwrap() + 1;
             *completed.write().unwrap() = c;
@@ -77,7 +112,19 @@ pub fn bundle_assets(
         .map(Result::ok)
         .collect::<Vec<_>>();
 
+    Ok(())
+}
+
+pub fn finish_bundle_assets(
+    window: Window,
+    builder: RwLock<tar::Builder<Cursor<Vec<u8>>>>,
+    progress: Arc<RwLock<f64>>,
+    max_progress: u32,
+    file_message: &str,
+) -> Result<Vec<u8>> {
     let mut builder = builder.into_inner().unwrap();
+    let window = Arc::new(Mutex::new(window));
+
     builder.finish()?;
     let data = builder.into_inner()?.into_inner();
 
