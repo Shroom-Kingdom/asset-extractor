@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, useState } from 'react';
 
-import { Button, Row } from '@geist-ui/react';
+import { Button, Grid } from '@geist-ui/react';
 import { invoke } from '@tauri-apps/api';
 
 export const MultiStep: FC<{
@@ -60,8 +60,11 @@ export const MultiStep: FC<{
       >
         {steps[currentStep].component}
       </div>
-      <div style={{ margin: '2rem 0', flex: '0 0 3rem' }}>
-        <Row justify="space-around">
+      <Grid.Container
+        style={{ margin: '2rem 0', flex: '0 0 3rem' }}
+        justify="space-around"
+      >
+        <Grid>
           <Button
             onClick={navigateBackward}
             style={{
@@ -73,6 +76,8 @@ export const MultiStep: FC<{
           >
             Back
           </Button>
+        </Grid>
+        <Grid>
           <Button
             onClick={bundleData ? download : navigateForward}
             style={{
@@ -88,8 +93,8 @@ export const MultiStep: FC<{
           >
             {bundleData ? 'Save' : steps[currentStep].nextLabel ?? 'Next'}
           </Button>
-        </Row>
-      </div>
+        </Grid>
+      </Grid.Container>
     </div>
   );
 };

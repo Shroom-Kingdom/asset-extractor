@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@geist-ui/react": "^2",
-    "@geist-ui/react-icons": "^1.0.1",
-    "@tauri-apps/api": "^1.0.0-rc.2",
+    "@geist-ui/react-icons": "^1",
+    "@tauri-apps/api": "^1.0.0-rc.4",
     "react": "^17",
     "react-dom": "^17"
   },
@@ -23,7 +23,7 @@
     "@babel/plugin-transform-typescript": "^7",
     "@babel/polyfill": "^7",
     "@babel/preset-env": "^7",
-    "@tauri-apps/cli": "^1.0.0-rc.7",
+    "@tauri-apps/cli": "^1.0.0-rc.9",
     "@types/react": "^17",
     "@types/react-dom": "^17",
     "@typescript-eslint/eslint-plugin": "^4",
@@ -31,7 +31,7 @@
     "babel-loader": "^8",
     "core-js": "3",
     "eslint": "^7",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-prettier": "^8",
     "eslint-plugin-ordered-imports": "^0",
     "eslint-plugin-prettier": "^3",
     "eslint-plugin-react": "^7",

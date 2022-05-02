@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
 import * as Icon from '@geist-ui/react-icons';
-import { Button, Row, Text } from '@geist-ui/react';
+import { Button, Grid, Text } from '@geist-ui/react';
 
 export const AssetSelect: FC<{
   loading: boolean;
@@ -37,33 +37,39 @@ export const AssetSelect: FC<{
           minWidth: '24rem'
         }}
       >
-        {keys.map(key => (
-          <Row key={key} style={{ margin: '0.4rem 0', alignItems: 'center' }}>
-            <div
-              style={{
-                flex: '1 1 auto',
-                marginRight: '1rem',
-                wordBreak: 'break-word'
-              }}
+        <Grid.Container>
+          {keys.map(key => (
+            <Grid
+              key={key}
+              xs={24}
+              style={{ margin: '0.4rem 0', alignItems: 'center' }}
             >
-              {key}
-            </div>
-            <Button
-              auto
-              size="mini"
-              type="secondary-light"
-              style={prodKey === key ? { backgroundColor: 'darkgreen' } : {}}
-              disabled={loading}
-              iconRight={prodKey === key ? <Icon.Check /> : <Icon.Key />}
-              onClick={prodKey !== key ? handleSetProdKey(key) : undefined}
-            >
-              Select
-            </Button>
-          </Row>
-        ))}
+              <div
+                style={{
+                  flex: '1 1 auto',
+                  marginRight: '1rem',
+                  wordBreak: 'break-word'
+                }}
+              >
+                {key}
+              </div>
+              <Button
+                auto
+                scale={0.5}
+                type="secondary-light"
+                style={prodKey === key ? { backgroundColor: 'darkgreen' } : {}}
+                disabled={loading}
+                iconRight={prodKey === key ? <Icon.Check /> : <Icon.Key />}
+                onClick={prodKey !== key ? handleSetProdKey(key) : undefined}
+              >
+                Select
+              </Button>
+            </Grid>
+          ))}
+        </Grid.Container>
         <Button
           auto
-          size="mini"
+          scale={0.5}
           type="secondary-light"
           disabled={loading}
           iconRight={<Icon.Key />}
@@ -76,13 +82,9 @@ export const AssetSelect: FC<{
       <Text style={{ marginTop: '2rem' }}>
         Please select all your game resource files from Super Mario Maker 2:
       </Text>
-      <div style={{ maxWidth: '36rem', minWidth: '24rem' }}>
+      <Grid.Container style={{ maxWidth: '36rem', minWidth: '24rem' }}>
         {assetFiles.map(assetFile => (
-          <Row
-            key={assetFile}
-            style={{ marginBottom: '0.6rem' }}
-            justify="space-between"
-          >
+          <Grid key={assetFile} xs={24} style={{ marginBottom: '0.6rem' }}>
             <span
               style={{
                 flex: '1 1 auto',
@@ -94,15 +96,15 @@ export const AssetSelect: FC<{
             </span>
             <Button
               auto
-              size="mini"
+              scale={0.5}
               type="error"
               disabled={loading}
               icon={<Icon.Trash2 />}
               onClick={handleRemoveFile(assetFile)}
             />
-          </Row>
+          </Grid>
         ))}
-      </div>
+      </Grid.Container>
 
       {filesMissing && (
         <div
@@ -116,33 +118,34 @@ export const AssetSelect: FC<{
             margin: '0.6rem 0'
           }}
         >
-          <Row align="middle">
-            <Icon.AlertTriangle size={48} />
-            <div style={{ width: '1.2rem' }} />
-            <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-              Your assets are missing the following files in order to be able to
-              play in Shroom Kingdom:
-            </div>
-          </Row>
-          {filesMissing.map(file => (
-            <Row
-              key={file}
-              style={{ marginBottom: '0.3rem' }}
-              justify="space-between"
-            >
-              <span
-                style={{
-                  flex: '1 1 auto',
-                  marginRight: '1rem',
-                  wordBreak: 'break-word',
-                  color: 'red',
-                  fontSize: '0.8rem'
-                }}
-              >
-                {file}
-              </span>
-            </Row>
-          ))}
+          <Grid.Container alignItems="center" gap={2} wrap="nowrap">
+            <Grid>
+              <Icon.AlertTriangle size={48} />
+            </Grid>
+            <Grid>
+              <div style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
+                Your assets are missing the following files in order to be able
+                to play in Shroom Kingdom:
+              </div>
+            </Grid>
+          </Grid.Container>
+          <Grid.Container justify="space-between">
+            {filesMissing.map(file => (
+              <Grid key={file} style={{ marginBottom: '0.3rem' }}>
+                <span
+                  style={{
+                    flex: '1 1 auto',
+                    marginRight: '1rem',
+                    wordBreak: 'break-word',
+                    color: 'red',
+                    fontSize: '0.8rem'
+                  }}
+                >
+                  {file}
+                </span>
+              </Grid>
+            ))}
+          </Grid.Container>
         </div>
       )}
 
