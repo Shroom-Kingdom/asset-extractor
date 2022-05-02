@@ -135,6 +135,6 @@ jobs:
           commit: ${{ github.sha }}
           tag: ${{ github.sha }}
           name: "Shroom Kingdom Assets Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
-          artifacts: "src-tauri/target/release/bundle/msi/asset-extractor_${{ env.VERSION }}_x64.msi"
+          artifacts: "src-tauri/target/release/bundle/msi/asset-extractor_${{ env.VERSION }}_x64_en-US.msi"
           draft: true
           allowUpdates: true
