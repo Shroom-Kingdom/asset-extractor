@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { CssBaseline, GeistProvider } from '@geist-ui/react';
+import { CssBaseline, GeistProvider } from '@geist-ui/core';
 
 import { App } from './app';
 

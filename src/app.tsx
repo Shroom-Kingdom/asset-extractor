@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
-import * as Icon from '@geist-ui/react-icons';
+import * as Icon from '@geist-ui/icons';
 import { open } from '@tauri-apps/api/dialog';
 import { invoke } from '@tauri-apps/api/tauri';
 import { getCurrent } from '@tauri-apps/api/window';

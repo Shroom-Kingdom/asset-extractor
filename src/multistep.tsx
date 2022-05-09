@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, useState } from 'react';
 
-import { Button, Grid } from '@geist-ui/react';
+import { Button, Grid } from '@geist-ui/core';
 import { invoke } from '@tauri-apps/api';
 
 export const MultiStep: FC<{

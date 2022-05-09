@@ -10,9 +10,9 @@
     "clean": "yarn rimraf ./dist"
   },
   "dependencies": {
-    "@geist-ui/react": "^2",
-    "@geist-ui/react-icons": "^1",
-    "@tauri-apps/api": "^1.0.0-rc.4",
+    "@geist-ui/core": "^2.3.8",
+    "@geist-ui/icons": "^1.0.2",
+    "@tauri-apps/api": "^1.0.0-rc.5",
     "react": "^17",
     "react-dom": "^17"
   },
@@ -23,7 +23,7 @@
     "@babel/plugin-transform-typescript": "^7",
     "@babel/polyfill": "^7",
     "@babel/preset-env": "^7",
-    "@tauri-apps/cli": "^1.0.0-rc.9",
+    "@tauri-apps/cli": "^1.0.0-rc.10",
     "@types/react": "^17",
     "@types/react-dom": "^17",
     "@typescript-eslint/eslint-plugin": "^4",

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
-import * as Icon from '@geist-ui/react-icons';
-import { Button, Grid, Text } from '@geist-ui/react';
+import * as Icon from '@geist-ui/icons';
+import { Button, Grid, Text } from '@geist-ui/core';
 
 export const AssetSelect: FC<{
   loading: boolean;

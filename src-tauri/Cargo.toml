@@ -10,7 +10,7 @@ edition = "2018"
 build = "src/build.rs"
 
 [build-dependencies]
-tauri-build = { version = "1.0.0-rc.7", features = [] }
+tauri-build = { version = "1.0.0-rc.8", features = [] }
 
 [dependencies]
 dirs = "4"
@@ -24,7 +24,7 @@ rayon = "1"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tar = "0.4"
-tauri = { version = "1.0.0-rc.8", features = ["api-all"] }
+tauri = { version = "1.0.0-rc.9", features = ["api-all"] }
 tempfile = "3"
 thiserror = "1"
 zip = "0.6"

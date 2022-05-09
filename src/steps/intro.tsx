@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 import React, { FC } from 'react';
 
-import { Text } from '@geist-ui/react';
+import { Text } from '@geist-ui/core';
 
 export const Intro: FC = () => {
   return (

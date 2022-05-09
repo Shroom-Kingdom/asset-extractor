@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { Note, Progress, Text } from '@geist-ui/react';
+import { Note, Progress, Text } from '@geist-ui/core';
 
 export const ExtractProgress: FC<{
   extractProgress: number;
