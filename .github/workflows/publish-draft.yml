@@ -61,15 +61,6 @@ jobs:
         run: |
           yarn tauri build
 
-      - name: Compress release
-        env:
-          GZIP: -9
-        run: |
-          cd src-tauri/target/release/bundle/deb
-          tar czvf asset-extractor_${{ env.VERSION }}_amd64.deb.tar.gz asset-extractor_${{ env.VERSION }}_amd64.deb
-          cd ../appimage
-          tar czvf asset-extractor_${{ env.VERSION }}_amd64.AppImage.tar.gz asset-extractor_${{ env.VERSION }}_amd64.AppImage
-
       - name: Update Draft Release
         uses: ncipollo/release-action@v1
         env:
@@ -79,7 +70,7 @@ jobs:
           commit: ${{ github.sha }}
           tag: ${{ github.sha }}
           name: "Shroom Kingdom Assets Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
-          artifacts: "src-tauri/target/release/bundle/deb/asset-extractor_${{ env.VERSION }}_amd64.deb.tar.gz,src-tauri/target/release/bundle/appimage/asset-extractor_${{ env.VERSION }}_amd64.AppImage.tar.gz"
+          artifacts: "src-tauri/target/release/bundle/deb/asset-extractor_${{ env.VERSION }}_amd64.deb,src-tauri/target/release/bundle/appimage/asset-extractor_${{ env.VERSION }}_amd64.AppImage"
           draft: true
           allowUpdates: true
 
