@@ -55,7 +55,7 @@ pub fn extract_zip(dir: &TempDir, file: &PathBuf) {
 }
 
 pub async fn extract_7z(window: Window, dir: &TempDir, file: &Path) -> Result<()> {
-    let (mut rx_sidecar, _) = Command::new_sidecar("7z")
+    let (mut rx_sidecar, _) = Command::new_sidecar("7z-sk")
         .expect("failed to create `7z` binary command")
         .args(vec![
             "x",

@@ -42,8 +42,7 @@ export const Intro: FC = () => {
       </Text>
       <Text>
         This software is in early access. You can currently only extract XCI,
-        ZIP and 7z files. Support for NSP files and game mods will be added
-        later.
+        ZIP and 7z files. Support for NSP files will be added later.
       </Text>
     </>
   );

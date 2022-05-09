@@ -13,7 +13,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "app.shroomkingdom.net",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -22,7 +22,7 @@
         "icons/icon.ico"
       ],
       "resources": [],
-      "externalBin": ["bin/hactool", "bin/7z"],
+      "externalBin": ["bin/hactool", "bin/7z-sk"],
       "copyright": "",
       "category": "DeveloperTool",
       "shortDescription": "",
