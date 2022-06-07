@@ -12,6 +12,7 @@ use std::{
     path::{self, PathBuf},
     sync::RwLock,
 };
+use tar::Builder;
 
 pub fn bundle_ninres(
     file: &NinResFile,
@@ -89,69 +90,60 @@ fn extract_bfres(
                                             }
 
                                             let mut file_name = file_name.clone();
+                                            let mut transparent_file_name = file_name.clone();
                                             file_name.push_str(&format!(
                                                 "{}_{}_{}.png",
                                                 texture.get_name(),
                                                 tex_count,
                                                 x + 16 * y
                                             ));
+                                            write_image(&image, &file_name, builder, mtime, None)?;
 
-                                            let mut image_data = vec![];
-                                            let encoder = PngEncoder::new_with_quality(
-                                                &mut image_data,
-                                                CompressionType::Best,
-                                                FilterType::NoFilter,
-                                            );
-                                            encoder.write_image(
-                                                image.as_bytes(),
-                                                image.width(),
-                                                image.height(),
-                                                image.color(),
-                                            )?;
-
-                                            let mut header = tar::Header::new_gnu();
-                                            header.set_size(image_data.len() as u64);
-                                            header.set_mode(0o644);
-                                            header.set_mtime(mtime);
-                                            header.set_cksum();
-                                            builder.write().unwrap().append_data(
-                                                &mut header,
-                                                file_name.clone(),
-                                                &image_data[..],
+                                            transparent_file_name.push_str(&format!(
+                                                "0{}_{}_{}.png",
+                                                texture.get_name(),
+                                                tex_count,
+                                                x + 16 * y
+                                            ));
+                                            let mut bytes = image.clone().into_bytes();
+                                            for b in (3..bytes.len()).step_by(4) {
+                                                bytes[b] = 192;
+                                            }
+                                            write_image(
+                                                &image,
+                                                &transparent_file_name,
+                                                builder,
+                                                mtime,
+                                                Some(bytes),
                                             )?;
                                         }
                                         Ok(())
                                     })
                                     .collect::<Result<()>>()?;
                             }
+                            let mut transparent_file_name = file_name.clone();
                             file_name.push_str(&format!(
                                 "{}_{}.png",
                                 texture.get_name(),
                                 tex_count
                             ));
+                            write_image(&image, &file_name, builder, mtime, None)?;
 
-                            let mut image_data = vec![];
-                            let encoder = PngEncoder::new_with_quality(
-                                &mut image_data,
-                                CompressionType::Best,
-                                FilterType::NoFilter,
-                            );
-                            encoder.write_image(
-                                image.as_bytes(),
-                                image.width(),
-                                image.height(),
-                                image.color(),
-                            )?;
-
-                            let mut header = tar::Header::new_gnu();
-                            header.set_size(image_data.len() as u64);
-                            header.set_mode(0o644);
-                            header.set_mtime(mtime);
-                            header.set_cksum();
-                            builder.write().unwrap().append_data(
-                                &mut header,
-                                file_name,
-                                &image_data[..],
+                            transparent_file_name.push_str(&format!(
+                                "0{}_{}.png",
+                                texture.get_name(),
+                                tex_count,
+                            ));
+                            let mut bytes = image.clone().into_bytes();
+                            for b in (3..bytes.len()).step_by(4) {
+                                bytes[b] = 192;
+                            }
+                            write_image(
+                                &image,
+                                &transparent_file_name,
+                                builder,
+                                mtime,
+                                Some(bytes),
                             )?;
                         }
                     }
@@ -203,5 +195,38 @@ fn extract_sarc(
             Ok(())
         })
         .collect::<Result<Vec<_>>>()?;
+    Ok(())
+}
+
+fn write_image(
+    image: &DynamicImage,
+    file_name: &str,
+    builder: &RwLock<Builder<Cursor<Vec<u8>>>>,
+    mtime: u64,
+    bytes: Option<Vec<u8>>,
+) -> Result<()> {
+    let mut image_data = vec![];
+    let encoder =
+        PngEncoder::new_with_quality(&mut image_data, CompressionType::Best, FilterType::NoFilter);
+    if let Some(bytes) = bytes {
+        encoder.write_image(&bytes[..], image.width(), image.height(), image.color())?;
+    } else {
+        encoder.write_image(
+            image.as_bytes(),
+            image.width(),
+            image.height(),
+            image.color(),
+        )?;
+    }
+
+    let mut header = tar::Header::new_gnu();
+    header.set_size(image_data.len() as u64);
+    header.set_mode(0o644);
+    header.set_mtime(mtime);
+    header.set_cksum();
+    builder
+        .write()
+        .unwrap()
+        .append_data(&mut header, file_name, &image_data[..])?;
     Ok(())
 }

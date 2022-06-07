@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "0.3.0"
+version = "0.4.0"
 description = "Shroom Kingdom Asset Extractor"
 authors = ["Shroom Kingdom <info@shroomkingdom.net>"]
 license = "MIT"
