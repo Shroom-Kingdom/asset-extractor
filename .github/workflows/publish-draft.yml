@@ -69,7 +69,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.sha }}
           tag: ${{ github.sha }}
-          name: "Shroom Kingdom Assets Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
+          name: "Shroom Kingdom Asset Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
           artifacts: "src-tauri/target/release/bundle/deb/asset-extractor_${{ env.VERSION }}_amd64.deb,src-tauri/target/release/bundle/appimage/asset-extractor_${{ env.VERSION }}_amd64.AppImage"
           draft: true
           allowUpdates: true
@@ -125,7 +125,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit: ${{ github.sha }}
           tag: ${{ github.sha }}
-          name: "Shroom Kingdom Assets Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
+          name: "Shroom Kingdom Asset Extractor ${{ env.VERSION }} [Run#: ${{ github.run_number }}]"
           artifacts: "src-tauri/target/release/bundle/msi/asset-extractor_${{ env.VERSION }}_x64_en-US.msi"
           draft: true
           allowUpdates: true
